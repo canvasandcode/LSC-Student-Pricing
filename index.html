@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing App</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <style>
+      body {
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .dropdown-container {
+        display: flex;
+        flex-direction: column;
+        width: 40%;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: bold;
+        padding-bottom: 5px;
+      }
+
+      select {
+        height: 30px;
+        border-radius: 7px;
+        margin-bottom: 10px;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+        width: 165px;
+      }
+
+      tr:nth-child(odd) {
+        background-color: #f2f2f2;
+      }
+
+      tr:nth-child(even) {
+        background-color: #e0e0e0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <h1>Student Pricing Information</h1>
+
+      <div class="dropdown-container">
+        <label for="level">Select Level:</label>
+        <select v-model="selectedLevel" id="level">
+          <option v-for="option in levelOptions" :key="option" :value="option">
+            {{ option }}
+          </option>
+        </select>
+
+        <label for="sessions">Select Number of Sessions:</label>
+        <select v-model="selectedSessions" id="sessions">
+          <option v-for="option in sessionOptions" :key="option.value" :value="option.value">
+            {{ option.text }}
+          </option>
+        </select>
+      </div>
+
+      <table v-if="pricingData">
+        <thead>
+          <tr>
+            <th>Session Type</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(price, type) in pricingData" :key="type">
+            <td>{{ formatSessionType(type) }}</td>
+            <td>£{{ price }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          levelOptions: ['GCSE', 'A-Level'],
+          sessionOptions: [
+            { value: 1, text: '1 Session' },
+            { value: 2, text: '2 Sessions' },
+            { value: 3, text: '3 Sessions' },
+            { value: 4, text: '4+ Sessions' },
+          ],
+          selectedLevel: 'GCSE',
+          selectedSessions: 1,
+          pricing: {
+            GCSE: {
+              1: { centrePerHour: 12.5, centrePerTwoHours: 25.0, weekdaySessionPrice: 18.75, onlinePerHour: 12.0, onlinePerSession: 18.0 },
+              2: { centrePerHour: 11.25, centrePerTwoHours: 22.5, weekdaySessionPrice: 16.88, onlinePerHour: 9.6, onlinePerSession: 14.4 },
+              3: { centrePerHour: 10.6, centrePerTwoHours: 21.2, weekdaySessionPrice: 15.9, onlinePerHour: 9.6, onlinePerSession: 14.4 },
+              4: { centrePerHour: 10.0, centrePerTwoHours: 20.0, weekdaySessionPrice: 15.0, onlinePerHour: 9.6, onlinePerSession: 14.4 },
+            },
+            'A-Level': {
+              1: { centrePerHour: 15.0, centrePerTwoHours: 30.0, weekdaySessionPrice: 22.5, onlinePerHour: 15.0, onlinePerSession: 22.5 },
+              2: { centrePerHour: 13.5, centrePerTwoHours: 27.0, weekdaySessionPrice: 20.25, onlinePerHour: 12.0, onlinePerSession: 18.0 },
+              3: { centrePerHour: 12.75, centrePerTwoHours: 25.5, weekdaySessionPrice: 19.13, onlinePerHour: 12.0, onlinePerSession: 18.0 },
+              4: { centrePerHour: 12.0, centrePerTwoHours: 24.0, weekdaySessionPrice: 18.0, onlinePerHour: 12.0, onlinePerSession: 18.0 },
+            },
+          },
+        },
+        computed: {
+          pricingData() {
+            return this.pricing[this.selectedLevel][this.selectedSessions];
+          },
+        },
+        methods: {
+          formatSessionType(type) {
+            const mapping = {
+              centrePerHour: '1 Hour (Centre)',
+              centrePerTwoHours: '2 Hours (Centre)',
+              weekdaySessionPrice: '90 Minutes (Centre)',
+              onlinePerHour: '1 Hour (Online)',
+              onlinePerSession: 'Per Session (Online)',
+            };
+            return mapping[type] || type;
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
